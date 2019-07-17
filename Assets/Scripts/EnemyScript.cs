@@ -6,6 +6,7 @@ public class EnemyScript : MonoBehaviour
 {
     public float Speed;
     public Rigidbody2D rb;
+    public ParticleSystem boom;
     // Start is called before the first frame update
     void Start()
     { 
@@ -23,6 +24,7 @@ public class EnemyScript : MonoBehaviour
         {
             PlayExplosion();
             Destroy(transform.gameObject);
+            Instantiate(boom, transform.position,boom.transform.rotation);
         }
     }
 
@@ -37,6 +39,6 @@ public class EnemyScript : MonoBehaviour
 
     public void PlayExplosion()
     {
-        GetComponent<AudioSource>().Play();
+        //GetComponent<AudioSource>().Play();
     }
 }
