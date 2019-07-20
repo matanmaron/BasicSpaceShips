@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -10,9 +11,10 @@ public class PlayerScript : MonoBehaviour
     public Transform spawned;
     private int health = 3;
     private bool dead;
+	public ParticleSystem boom;
 
-    // Start is called before the first frame update
-    void Start()
+	// Start is called before the first frame update
+	void Start()
     {
         dead = false;
     }
@@ -39,11 +41,22 @@ public class PlayerScript : MonoBehaviour
     {
         dead = true;
         Destroy(transform.gameObject);
-    }
+		Instantiate(boom, transform.position, boom.transform.rotation);
+	}
 
-    // Update is called once per frame
-    void LateUpdate()
+	// Update is called once per frame
+	void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Quit();
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Reset();
+            return;
+        }
         if (!dead)
         {
             float h = Input.GetAxisRaw("Horizontal");
@@ -52,38 +65,22 @@ public class PlayerScript : MonoBehaviour
             Vector3 tempVect = new Vector3(h, v, 0);
             tempVect = tempVect.normalized * Speed * Time.deltaTime;
             rb.MovePosition(rb.transform.position + tempVect);
-            /*
-            if (Input.GetAxisRaw("Horizontal") > 0)
-            {
-                rb.velocity = Vector2.right * Speed * Time.deltaTime;
-            }
-            else if (Input.GetAxisRaw("Horizontal") < 0)
-            {
-                rb.velocity = Vector2.right * -Speed * Time.deltaTime;
-            }
-            else
-            {
-                rb.velocity = Vector2.right * 0;
-            }
-            if (Input.GetAxisRaw("Vertical") > 0)
-            {
-                rb.velocity = Vector2.up * Speed * Time.deltaTime;
-            }
-            else if (Input.GetAxisRaw("Vertical") < 0)
-            {
-                rb.velocity = Vector2.down * Speed * Time.deltaTime;
-            }
-            else
-            {
-                rb.velocity = Vector2.up * 0;
-            }
-            //rb.velocity = Vector2.right * Speed * Time.deltaTime;
-            */
+
             //shoot
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Instantiate(spawned, transform.position, transform.rotation);
             }
         }
+    }
+
+    private void Reset()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void Quit()
+    {
+        Application.Quit();
     }
 }
