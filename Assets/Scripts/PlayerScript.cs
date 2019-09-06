@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -11,11 +12,20 @@ public class PlayerScript : MonoBehaviour
     public Transform spawned;
     private int health = 3;
     private bool dead;
+    private int score = 0;
+    private bool godmod;
 	public ParticleSystem boom;
+    public Text _life;
+    public Text _score;
 
 	// Start is called before the first frame update
 	void Start()
     {
+        godmod = false;
+        score = 0;
+        health = 3;
+        _life.text = health.ToString();
+        _score.text = score.ToString();
         dead = false;
     }
 
@@ -26,15 +36,33 @@ public class PlayerScript : MonoBehaviour
             KillMe();
             return;
         }
-        if (collision.gameObject.name.Contains("Enemy"))
+        if (collision.gameObject.name.Contains("Enemy") && !godmod)
         {
+            GetComponent<AudioSource>().Play();
+            godmod = true;
+            Invoke("NoGod", 2);
             health--;
-            GetComponent<Animator>().Play("ShipDamage");
+            ShipDamage();
+            Invoke("ShipDamage", 0.5f);
+            Invoke("ShipDamage", 1f);
+            Invoke("ShipDamage", 1.5f);
         }
         if (health==0)
         {
             KillMe();
         }
+        _life.text = health.ToString();
+
+    }
+
+    void ShipDamage()
+    {
+        GetComponent<Animator>().Play("ShipDamage");
+    }
+
+    void NoGod()
+    {
+        godmod = false;
     }
 
     private void KillMe()
@@ -74,12 +102,12 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    private void Reset()
+    public void Reset()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private void Quit()
+    public void Quit()
     {
         Application.Quit();
     }
