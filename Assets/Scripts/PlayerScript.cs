@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,21 +12,27 @@ public class PlayerScript : MonoBehaviour
     public int Speed;
     public Rigidbody2D rb;
     public Transform spawned;
-    private int health = 3;
+
     private bool dead;
     private int score = 0;
-    private bool godmod;
-	public ParticleSystem boom;
-    public Text _life;
-    public Text _score;
+    public int highscore;
+    public string highname;
 
+    public string _name;
+	public ParticleSystem boom;
+
+    public Text _score;
+    public Text _highscore;
+    public InputField _inputField;
+    public GameObject _inputpanel;
 	// Start is called before the first frame update
 	void Start()
     {
-        godmod = false;
+        LoadFile();
+        _highscore.text = highname + " " + highscore.ToString();
+
         score = 0;
-        health = 3;
-        _life.text = health.ToString();
+
         _score.text = score.ToString();
         dead = false;
     }
@@ -36,22 +44,11 @@ public class PlayerScript : MonoBehaviour
             KillMe();
             return;
         }
-        if (collision.gameObject.name.Contains("Enemy") && !godmod)
+        if (collision.gameObject.name.Contains("Enemy"))
         {
-            GetComponent<AudioSource>().Play();
-            godmod = true;
-            Invoke("NoGod", 2);
-            health--;
-            ShipDamage();
-            Invoke("ShipDamage", 0.5f);
-            Invoke("ShipDamage", 1f);
-            Invoke("ShipDamage", 1.5f);
-        }
-        if (health==0)
-        {
+            //GetComponent<AudioSource>().Play();
             KillMe();
         }
-        _life.text = health.ToString();
 
     }
 
@@ -60,31 +57,42 @@ public class PlayerScript : MonoBehaviour
         GetComponent<Animator>().Play("ShipDamage");
     }
 
-    void NoGod()
+    private void KillMe()
     {
-        godmod = false;
+        if (score > highscore)
+        {
+            _inputpanel.SetActive(true);
+            Time.timeScale = 0;
+        }
+        else
+        {
+            KillMeFinale();
+        }
+	}
+
+    public void InputOK()
+    {
+        _name = _inputField.text;
+        if (_inputField.text.Length > 8)
+        {
+            _name = _inputField.text.Substring(0,8);
+        }
+        SaveFile();
+        _inputpanel.SetActive(false);
+        Time.timeScale = 1;
+        KillMeFinale();
     }
 
-    private void KillMe()
+    public void KillMeFinale()
     {
         dead = true;
         Destroy(transform.gameObject);
-		Instantiate(boom, transform.position, boom.transform.rotation);
-	}
+        Instantiate(boom, transform.position, boom.transform.rotation);
+    }
 
 	// Update is called once per frame
 	void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Quit();
-            return;
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Reset();
-            return;
-        }
         if (!dead)
         {
             float h = Input.GetAxisRaw("Horizontal");
@@ -102,13 +110,59 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    public void Reset()
+    public void ScoreUp()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        score++;
+        _score.text = score.ToString();
     }
 
-    public void Quit()
+    public void SaveFile()
     {
-        Application.Quit();
+        string destination = Application.persistentDataPath + "/save.dat";
+        FileStream file;
+
+        if (File.Exists(destination)) file = File.OpenWrite(destination);
+        else file = File.Create(destination);
+
+        GameData data = new GameData(score, _name);
+        BinaryFormatter bf = new BinaryFormatter();
+        bf.Serialize(file, data);
+        file.Close();
+    }
+
+    public void LoadFile()
+    {
+        string destination = Application.persistentDataPath + "/save.dat";
+        FileStream file;
+
+        if (File.Exists(destination)) file = File.OpenRead(destination);
+        else
+        {
+            //Debug.LogError("File not found");
+            return;
+        }
+
+        BinaryFormatter bf = new BinaryFormatter();
+        GameData data = (GameData)bf.Deserialize(file);
+        file.Close();
+
+        highscore = data.score;
+        highname = data.name;
+
+       //Debug.Log(data.name);
+       //Debug.Log(data.score);
+    }
+}
+
+[System.Serializable]
+public class GameData
+{
+    public int score;
+    public string name;
+
+    public GameData(int scoreInt, string nameStr)
+    {
+        score = scoreInt;
+        name = nameStr;
     }
 }

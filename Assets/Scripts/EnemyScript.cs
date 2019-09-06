@@ -9,7 +9,7 @@ public class EnemyScript : MonoBehaviour
     public ParticleSystem boom;
     // Start is called before the first frame update
     void Start()
-    { 
+    {
         Invoke("Dead", 1);
     }
 
@@ -22,7 +22,9 @@ public class EnemyScript : MonoBehaviour
     {
         if (collision.gameObject.name.Contains("Laser"))
         {
-            PlayExplosion();
+            var _player = GameObject.Find("Player");
+            var _script = _player.GetComponent<PlayerScript>();
+            _script.ScoreUp();
             Destroy(transform.gameObject);
             Instantiate(boom, transform.position,boom.transform.rotation);
         }
@@ -35,10 +37,5 @@ public class EnemyScript : MonoBehaviour
             Destroy(transform.gameObject);
         }
         Invoke("Dead", 1);
-    }
-
-    public void PlayExplosion()
-    {
-        //GetComponent<AudioSource>().Play();
     }
 }

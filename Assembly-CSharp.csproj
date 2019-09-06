@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\PlayerScript.cs" />
     <Compile Include="Assets\Scripts\ScriptEnemySpawner.cs" />
     <Compile Include="Assets\Scripts\ScriptSpawner.cs" />
+    <Compile Include="Assets\Scripts\WorldScript.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/Users/matanmaron/Projects/Unity/BasicSpaceShips/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
