@@ -9,12 +9,13 @@ using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
+    private bool dead;
+    private int score = 0;
+    private bool joystick;
     public int Speed;
     public Rigidbody2D rb;
     public Transform spawned;
 
-    private bool dead;
-    private int score = 0;
     public int highscore;
     public string highname;
 
@@ -25,13 +26,17 @@ public class PlayerScript : MonoBehaviour
     public Text _highscore;
     public InputField _inputField;
     public GameObject _inputpanel;
+    public GameObject _joystick;
 
-    public SwipeScript SwipeControls;
+    public string horizontalAxis = "Horizontal";
+    public string verticalAxis = "Vertical";
     public Vector3 ToPosition;
 
     // Start is called before the first frame update
     void Start()
     {
+        joystick = false;
+        _joystick.SetActive(false);
         LoadFile();
         _highscore.text = highname + " " + highscore.ToString();
 
@@ -40,6 +45,7 @@ public class PlayerScript : MonoBehaviour
         _score.text = score.ToString();
         dead = false;
     }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -97,22 +103,37 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.touchCount > 0)
+        {
+            if (!joystick)
+            {
+                joystick = true;
+                _joystick.SetActive(true);
+            }
+        }
         if (!dead)
         {
-            float h = Input.GetAxisRaw("Horizontal");
-            float v = Input.GetAxisRaw("Vertical");
 
-            Vector3 tempVect = new Vector3(h, v, 0);
-            tempVect = tempVect.normalized * Speed * Time.deltaTime;
-            rb.MovePosition(rb.transform.position + tempVect);
+            HandleKeys();
 
-            HandleTouch();
-            //shoot
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Shoot();
-            }
             OutOfScreen();
+        }
+    }
+
+    private void HandleKeys()
+    {
+        float h = SimpleInput.GetAxis(horizontalAxis);
+        float v = SimpleInput.GetAxis(verticalAxis);
+
+        Vector3 tempVect = new Vector3(h, v, 0);
+        tempVect = tempVect.normalized * Speed * Time.deltaTime;
+        rb.MovePosition(rb.transform.position + tempVect);
+
+		//shoot
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            Shoot();
         }
     }
 
@@ -132,40 +153,11 @@ public class PlayerScript : MonoBehaviour
         rb.velocity = speed;
     }
 
-        private void Shoot()
+        public void Shoot()
     {
         Instantiate(spawned, transform.position, transform.rotation);
     }
 
-    private void HandleTouch()
-    {
-        int h = 0, v = 0;
-        if (SwipeControls.Left)
-        {
-            h = -1;
-        }
-        if (SwipeControls.Right)
-        {
-            h = 1;
-        }
-        if (SwipeControls.Up)
-        {
-            v = 1;
-        }
-        if (SwipeControls.Down)
-        {
-            v = -1;
-        }
-
-        Vector3 tempVect = new Vector3(h, v, 0);
-        tempVect = tempVect.normalized * Speed * Time.deltaTime;
-        rb.MovePosition(rb.transform.position + tempVect);
-
-        if (SwipeControls.Tap)
-        {
-            Shoot();
-        }
-    }
 
     public void ScoreUp()
     {
