@@ -19,14 +19,18 @@ public class PlayerScript : MonoBehaviour
     public string highname;
 
     public string _name;
-	public ParticleSystem boom;
+    public ParticleSystem boom;
 
     public Text _score;
     public Text _highscore;
     public InputField _inputField;
     public GameObject _inputpanel;
-	// Start is called before the first frame update
-	void Start()
+
+    public SwipeScript SwipeControls;
+    public Vector3 ToPosition;
+
+    // Start is called before the first frame update
+    void Start()
     {
         LoadFile();
         _highscore.text = highname + " " + highscore.ToString();
@@ -68,14 +72,14 @@ public class PlayerScript : MonoBehaviour
         {
             KillMeFinale();
         }
-	}
+    }
 
     public void InputOK()
     {
         _name = _inputField.text;
         if (_inputField.text.Length > 8)
         {
-            _name = _inputField.text.Substring(0,8);
+            _name = _inputField.text.Substring(0, 8);
         }
         SaveFile();
         _inputpanel.SetActive(false);
@@ -90,11 +94,12 @@ public class PlayerScript : MonoBehaviour
         Instantiate(boom, transform.position, boom.transform.rotation);
     }
 
-	// Update is called once per frame
-	void Update()
+    // Update is called once per frame
+    void Update()
     {
         if (!dead)
         {
+            HandleTouch();
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
 
@@ -105,8 +110,57 @@ public class PlayerScript : MonoBehaviour
             //shoot
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Instantiate(spawned, transform.position, transform.rotation);
+                Shoot();
             }
+            OutOfScreen();
+        }
+    }
+
+    private void OutOfScreen()
+    {
+        Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+        pos.x = Mathf.Clamp01(pos.x);
+        pos.y = Mathf.Clamp01(pos.y);
+
+        Vector3 speed = rb.velocity;
+        if (pos.x == 0 || pos.x == 1)
+            speed.x = 0;
+        if (pos.y == 0 || pos.y == 1)
+            speed.y = 0;
+
+        transform.position = Camera.main.ViewportToWorldPoint(pos);
+        rb.velocity = speed;
+    }
+
+        private void Shoot()
+    {
+        Instantiate(spawned, transform.position, transform.rotation);
+    }
+
+    private void HandleTouch()
+    {
+        if (SwipeControls.Left)
+        {
+            ToPosition += Vector3.left;
+        }
+        if (SwipeControls.Right)
+        {
+            ToPosition += Vector3.right;
+        }
+        if (SwipeControls.Up)
+        {
+            ToPosition += Vector3.up;
+        }
+        if (SwipeControls.Down)
+        {
+            ToPosition += Vector3.down;
+        }
+
+        transform.position = Vector3.MoveTowards(transform.position, ToPosition, 5f * Time.deltaTime);
+
+        if (SwipeControls.Tap)
+        {
+            Shoot();
         }
     }
 
