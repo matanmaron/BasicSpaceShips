@@ -99,7 +99,6 @@ public class PlayerScript : MonoBehaviour
     {
         if (!dead)
         {
-            HandleTouch();
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
 
@@ -107,6 +106,7 @@ public class PlayerScript : MonoBehaviour
             tempVect = tempVect.normalized * Speed * Time.deltaTime;
             rb.MovePosition(rb.transform.position + tempVect);
 
+            HandleTouch();
             //shoot
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -139,24 +139,27 @@ public class PlayerScript : MonoBehaviour
 
     private void HandleTouch()
     {
+        int h = 0, v = 0;
         if (SwipeControls.Left)
         {
-            ToPosition += Vector3.left;
+            h = -1;
         }
         if (SwipeControls.Right)
         {
-            ToPosition += Vector3.right;
+            h = 1;
         }
         if (SwipeControls.Up)
         {
-            ToPosition += Vector3.up;
+            v = 1;
         }
         if (SwipeControls.Down)
         {
-            ToPosition += Vector3.down;
+            v = -1;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, ToPosition, 5f * Time.deltaTime);
+        Vector3 tempVect = new Vector3(h, v, 0);
+        tempVect = tempVect.normalized * Speed * Time.deltaTime;
+        rb.MovePosition(rb.transform.position + tempVect);
 
         if (SwipeControls.Tap)
         {

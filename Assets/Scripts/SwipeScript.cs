@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class SwipeScript : MonoBehaviour
 {
-    private bool tap, left, right, up, down, dragging;
+    private bool tap, left, right, up, down;
+    private bool dragging = false;
     private Vector2 start, delta;
 
     void Update()
@@ -20,7 +21,7 @@ public class SwipeScript : MonoBehaviour
 
     private void SupportDeadZone()
     {
-        if (delta.magnitude > 125)
+        if (delta.magnitude > 50)
         {
             float x = delta.x;
             float y = delta.y;
@@ -58,7 +59,7 @@ public class SwipeScript : MonoBehaviour
         {
             if (Input.touches.Length > 0)
             {
-                delta = Input.touches[0].position - delta;
+                delta = Input.touches[0].position - start;
             }
             else if (Input.GetMouseButton(0))
             {
@@ -79,6 +80,7 @@ public class SwipeScript : MonoBehaviour
             }
             else if (Input.touches[0].phase == TouchPhase.Ended || Input.touches[0].phase == TouchPhase.Canceled)
             {
+                dragging = false;
                 Reset();
             }
         }
@@ -94,6 +96,7 @@ public class SwipeScript : MonoBehaviour
         }
         else if(Input.GetMouseButtonUp(0))
         {
+            dragging = false;
             Reset();
         }
     }
@@ -106,6 +109,7 @@ public class SwipeScript : MonoBehaviour
 
     public Vector2 Delta { get { return delta; } }
     public bool Tap { get { return tap; } }
+    public bool Drag { get { return dragging; } }
     public bool Left { get { return left; } }
     public bool Right { get { return right; } }
     public bool Up { get { return up; } }
