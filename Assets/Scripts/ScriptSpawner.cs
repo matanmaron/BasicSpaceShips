@@ -18,7 +18,7 @@ public class ScriptSpawner : MonoBehaviour
         if (!create)
         {
             create = true;
-            StartCoroutine(CreateMeteor(Random.Range(1f,5f)));
+            StartCoroutine(CreateMeteor(Random.Range(0.5f,3f)));
         }
     }
 
