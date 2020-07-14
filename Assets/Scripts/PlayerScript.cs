@@ -9,13 +9,14 @@ using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
+
+    [SerializeField] GameObject[] hearts = null;
     private bool dead;
     private int score = 0;
-    private bool joystick;
     public int Speed;
     public Rigidbody2D rb;
     public Transform spawned;
-
+    public int health = 3;
     public int highscore;
     public string highname;
 
@@ -23,26 +24,22 @@ public class PlayerScript : MonoBehaviour
     public ParticleSystem boom;
 
     public Text _score;
-    public Text _highscore;
     public InputField _inputField;
-    public GameObject _inputpanel;
-    public GameObject _joystick;
 
     public string horizontalAxis = "Horizontal";
     public string verticalAxis = "Vertical";
     public Vector3 ToPosition;
 
+    bool canShoot = true;
+
     // Start is called before the first frame update
     void Start()
     {
-        joystick = false;
-        _joystick.SetActive(false);
-        LoadFile();
-        _highscore.text = highname + " " + highscore.ToString();
+        //LoadFile();
 
         score = 0;
 
-        _score.text = score.ToString();
+        _score.text = "score: "+score.ToString();
         dead = false;
     }
 
@@ -56,8 +53,7 @@ public class PlayerScript : MonoBehaviour
         }
         if (collision.gameObject.name.Contains("Enemy"))
         {
-            //GetComponent<AudioSource>().Play();
-            KillMe();
+            HitMe();
         }
 
     }
@@ -67,63 +63,55 @@ public class PlayerScript : MonoBehaviour
         GetComponent<Animator>().Play("ShipDamage");
     }
 
-    private void KillMe()
+    private void HitMe()
     {
-        if (score > highscore)
+        health--;
+        if (health == 0)
         {
-            _inputpanel.SetActive(true);
-            Time.timeScale = 0;
+            KillMe();
+            return;
         }
-        else
-        {
-            KillMeFinale();
-        }
+        ShipDamage();
+        hearts[health].SetActive(false);
     }
 
-    public void InputOK()
+    public void KillMe()
     {
-        _name = _inputField.text;
-        if (_inputField.text.Length > 8)
+        if (dead)
         {
-            _name = _inputField.text.Substring(0, 8);
+            return;
         }
-        SaveFile();
-        _inputpanel.SetActive(false);
-        Time.timeScale = 1;
-        KillMeFinale();
-    }
-
-    public void KillMeFinale()
-    {
+        Debug.Log("you dead !");
         dead = true;
-        Destroy(transform.gameObject);
         Instantiate(boom, transform.position, boom.transform.rotation);
+        Destroy(gameObject, 0.01f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.touchCount > 0)
+        if (!GameManager.Instance.gameOn)
         {
-            if (!joystick)
-            {
-                joystick = true;
-                _joystick.SetActive(true);
-            }
+            return;
         }
         if (!dead)
         {
-
-            HandleKeys();
-
-            OutOfScreen();
+            if (Application.platform == RuntimePlatform.IPhonePlayer
+                || Application.platform == RuntimePlatform.Android)
+            {
+                MobileMove();
+            }
+            else
+            {
+                HandleKeys();
+            }
         }
     }
 
     private void HandleKeys()
     {
-        float h = SimpleInput.GetAxis(horizontalAxis);
-        float v = SimpleInput.GetAxis(verticalAxis);
+        float h = Input.GetAxis(horizontalAxis);
+        float v = Input.GetAxis(verticalAxis);
 
         Vector3 tempVect = new Vector3(h, v, 0);
         tempVect = tempVect.normalized * Speed * Time.deltaTime;
@@ -136,33 +124,45 @@ public class PlayerScript : MonoBehaviour
             Shoot();
         }
     }
-
-    private void OutOfScreen()
+    private void MobileMove()
     {
-        Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
-        pos.x = Mathf.Clamp01(pos.x);
-        pos.y = Mathf.Clamp01(pos.y);
+        float moveHorizontal = Input.acceleration.normalized.x; // left / right movement
+        float moveVertical = -0.6f -Input.acceleration.normalized.z; //forward / backwards
 
-        Vector3 speed = rb.velocity;
-        if (pos.x == 0 || pos.x == 1)
-            speed.x = 0;
-        if (pos.y == 0 || pos.y == 1)
-            speed.y = 0;
+        // main three directional movement control
+        Vector3 movement = new Vector3(moveHorizontal, moveVertical, 0);
+        if (movement != Vector3.zero)
+        {
+            rb.MovePosition(rb.transform.position + movement );
+        }
+        //shoot
 
-        transform.position = Camera.main.ViewportToWorldPoint(pos);
-        rb.velocity = speed;
+        if (Input.touchCount > 0)
+        {
+            Shoot();
+        }
     }
 
         public void Shoot()
     {
-        Instantiate(spawned, transform.position, transform.rotation);
+        if (canShoot)
+        {
+            StartCoroutine(ShootTimer());
+            Instantiate(spawned, transform.position, transform.rotation);
+        }
     }
 
+    IEnumerator ShootTimer()
+    {
+        canShoot = false;
+        yield return new WaitForSeconds(0.5f);
+        canShoot = true;
+    }
 
     public void ScoreUp()
     {
         score++;
-        _score.text = score.ToString();
+        _score.text = "score: " + score.ToString();
     }
 
     public void SaveFile()

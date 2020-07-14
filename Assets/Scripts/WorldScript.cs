@@ -7,11 +7,19 @@ public class WorldScript : MonoBehaviour
 {
     public void Reset()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(0);
     }
 
     public void Quit()
     {
         Application.Quit();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Quit();
+        }
     }
 }

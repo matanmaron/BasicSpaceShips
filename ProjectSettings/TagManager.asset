@@ -13,12 +13,12 @@ TagManager:
   - UI
   - 
   - 
-  - bullet
-  - spaceship
-  - enemy
-  - meteor
-  - 
-  - 
+  - Walls
+  - World
+  - Enemy
+  - Player
+  - Meteor
+  - Lazer
   - 
   - 
   - 

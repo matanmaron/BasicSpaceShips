@@ -7,15 +7,15 @@ public class EnemyScript : MonoBehaviour
     public float Speed;
     public Rigidbody2D rb;
     public ParticleSystem boom;
-    // Start is called before the first frame update
-    void Start()
-    {
-        Invoke("Dead", 1);
-    }
+
 
     private void Update()
     {
-        rb.velocity = Vector2.right * -Speed * Time.deltaTime * Random.Range(1f,1.5f);
+        if (transform.position.x < -10)
+        {
+            Destroy(transform.gameObject);
+        }
+        rb.velocity = Vector2.right * -Speed * Time.deltaTime * Random.Range(1f, 1.5f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -26,16 +26,13 @@ public class EnemyScript : MonoBehaviour
             var _script = _player.GetComponent<PlayerScript>();
             _script.ScoreUp();
             Destroy(transform.gameObject);
-            Instantiate(boom, transform.position,boom.transform.rotation);
+            Instantiate(boom, transform.position, boom.transform.rotation);
         }
-    }
-
-    void Dead()
-    {
-        if (transform.position.x < -10)
+        if (collision.gameObject.name.Contains("Player"))
         {
+            var _player = GameObject.Find("Player");
             Destroy(transform.gameObject);
+            Instantiate(boom, transform.position, boom.transform.rotation);
         }
-        Invoke("Dead", 1);
     }
 }

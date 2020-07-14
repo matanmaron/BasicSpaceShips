@@ -10,6 +10,7 @@ public class LaserScript : MonoBehaviour
     void Start()
     {
         GetComponent<AudioSource>().Play();
+        Destroy(gameObject, 3f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -25,4 +26,6 @@ public class LaserScript : MonoBehaviour
     {
         rb.velocity = Vector2.right * Speed * Time.deltaTime;
     }
+
+
 }
