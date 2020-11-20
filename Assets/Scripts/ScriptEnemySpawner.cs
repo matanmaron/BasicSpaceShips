@@ -24,7 +24,7 @@ public class ScriptEnemySpawner : MonoBehaviour
 
     IEnumerator CreateEnemy(float time)
     {
-        transform.position = new Vector2(9, Random.Range(-4f, 4f));
+        transform.position = new Vector2(10, Random.Range(-4f, 4f));
         Instantiate(spawned, transform.position, transform.rotation);
         yield return new WaitForSeconds(time);
         create = false;
