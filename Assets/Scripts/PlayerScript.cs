@@ -35,14 +35,50 @@ public class PlayerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //LoadFile();
-
         score = 0;
-
-        _score.text = "score: "+score.ToString();
+        _name = System.Environment.UserName;
+        LoadFile();
+        _score.text = $"high score: {highscore} ({highname})";
         dead = false;
+
+        SwipeDetector.OnSwipe += Player_OnSwipe;
+        SwipeDetector.OnTouch += Player_OnTouch;
     }
 
+    private void Player_OnTouch(bool data)
+    {
+        if (data)
+        {
+            Shoot();
+        }
+    }
+
+    private void Player_OnSwipe(SwipeData data)
+    {
+        float h = 0;
+        float v = 0;
+
+        if (data.Direction == SwipeDirection.Up)
+        {
+            v = 1;
+
+        }
+        if (data.Direction == SwipeDirection.Down)
+        {
+            v = -1;
+        }
+        if (data.Direction == SwipeDirection.Left)
+        {
+            h = -1;
+        }
+        if (data.Direction == SwipeDirection.Right)
+        {
+            h = 1;
+        }
+        Vector3 tempVect = new Vector3(h, v, 0);
+        tempVect = tempVect.normalized * Speed * Time.deltaTime;
+        rb.MovePosition(rb.transform.position + tempVect);
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -96,15 +132,7 @@ public class PlayerScript : MonoBehaviour
         }
         if (!dead)
         {
-            if (Application.platform == RuntimePlatform.IPhonePlayer
-                || Application.platform == RuntimePlatform.Android)
-            {
-                MobileMove();
-            }
-            else
-            {
-                HandleKeys();
-            }
+            HandleKeys();
         }
     }
 
@@ -112,38 +140,20 @@ public class PlayerScript : MonoBehaviour
     {
         float h = Input.GetAxis(horizontalAxis);
         float v = Input.GetAxis(verticalAxis);
-
+        //Debug.Log($"{h},{v}");
         Vector3 tempVect = new Vector3(h, v, 0);
         tempVect = tempVect.normalized * Speed * Time.deltaTime;
         rb.MovePosition(rb.transform.position + tempVect);
 
-		//shoot
+        //shoot
 
         if (Input.GetButtonDown("Jump"))
         {
             Shoot();
         }
     }
-    private void MobileMove()
-    {
-        float moveHorizontal = Input.acceleration.normalized.x; // left / right movement
-        float moveVertical = -0.6f -Input.acceleration.normalized.z; //forward / backwards
 
-        // main three directional movement control
-        Vector3 movement = new Vector3(moveHorizontal, moveVertical, 0);
-        if (movement != Vector3.zero)
-        {
-            rb.MovePosition(rb.transform.position + movement );
-        }
-        //shoot
-
-        if (Input.touchCount > 0)
-        {
-            Shoot();
-        }
-    }
-
-        public void Shoot()
+    public void Shoot()
     {
         if (canShoot)
         {
@@ -162,56 +172,23 @@ public class PlayerScript : MonoBehaviour
     public void ScoreUp()
     {
         score++;
-        _score.text = "score: " + score.ToString();
+        _score.text = $"score: {score} ({_name})";
+        if (score > highscore)
+        {
+            highscore = score;
+        }
+        SaveFile();
     }
 
     public void SaveFile()
     {
-        string destination = Application.persistentDataPath + "/save.dat";
-        FileStream file;
-
-        if (File.Exists(destination)) file = File.OpenWrite(destination);
-        else file = File.Create(destination);
-
-        GameData data = new GameData(score, _name);
-        BinaryFormatter bf = new BinaryFormatter();
-        bf.Serialize(file, data);
-        file.Close();
+        PlayerPrefs.SetString("_name", _name);
+        PlayerPrefs.SetInt("score", score);
     }
 
     public void LoadFile()
     {
-        string destination = Application.persistentDataPath + "/save.dat";
-        FileStream file;
-
-        if (File.Exists(destination)) file = File.OpenRead(destination);
-        else
-        {
-            //Debug.LogError("File not found");
-            return;
-        }
-
-        BinaryFormatter bf = new BinaryFormatter();
-        GameData data = (GameData)bf.Deserialize(file);
-        file.Close();
-
-        highscore = data.score;
-        highname = data.name;
-
-       //Debug.Log(data.name);
-       //Debug.Log(data.score);
-    }
-}
-
-[System.Serializable]
-public class GameData
-{
-    public int score;
-    public string name;
-
-    public GameData(int scoreInt, string nameStr)
-    {
-        score = scoreInt;
-        name = nameStr;
+        highscore = PlayerPrefs.GetInt("score", 0);
+        highname = PlayerPrefs.GetString("_name", string.Empty);
     }
 }

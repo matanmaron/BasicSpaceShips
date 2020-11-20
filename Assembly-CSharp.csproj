@@ -74,6 +74,9 @@
     <Compile Include="Assets\Scripts\ScriptEnemySpawner.cs" />
     <Compile Include="Assets\Scripts\ScriptSpawner.cs" />
     <Compile Include="Assets\Scripts\ScrollBackground.cs" />
+    <Compile Include="Assets\SwipeDetector\SwipeDetector.cs" />
+    <Compile Include="Assets\SwipeDetector\SwipeDrawer.cs" />
+    <Compile Include="Assets\SwipeDetector\SwipeLogger.cs" />
     <Reference Include="UnityEngine">
       <HintPath>C:/UNITY/2019.4.15f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
