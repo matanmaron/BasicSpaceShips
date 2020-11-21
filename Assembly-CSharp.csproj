@@ -63,6 +63,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Camera Aspect Ratio Rectifier\cameraZoomController.cs" />
+    <Compile Include="Assets\EasyParallax\MovementSpeedType.cs" />
+    <Compile Include="Assets\EasyParallax\SpriteDuplicator.cs" />
+    <Compile Include="Assets\EasyParallax\SpriteMovement.cs" />
     <Compile Include="Assets\Scripts\AudioButton.cs" />
     <Compile Include="Assets\Scripts\EnemyScript.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
@@ -74,9 +78,7 @@
     <Compile Include="Assets\Scripts\ScriptEnemySpawner.cs" />
     <Compile Include="Assets\Scripts\ScriptSpawner.cs" />
     <Compile Include="Assets\Scripts\ScrollBackground.cs" />
-    <Compile Include="Assets\SwipeDetector\SwipeDetector.cs" />
-    <Compile Include="Assets\SwipeDetector\SwipeDrawer.cs" />
-    <Compile Include="Assets\SwipeDetector\SwipeLogger.cs" />
+    <None Include="Assets\EasyParallax\Readme.txt" />
     <Reference Include="UnityEngine">
       <HintPath>C:/UNITY/2019.4.15f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -608,6 +610,9 @@
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/UNITY/BasicSpaceShips/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>C:/UNITY/BasicSpaceShips/Library/ScriptAssemblies/Cinemachine.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.VSCode.Editor">
       <HintPath>C:/UNITY/BasicSpaceShips/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
@@ -625,6 +630,9 @@
     </Reference>
     <Reference Include="Unity.Rider.Editor">
       <HintPath>C:/UNITY/BasicSpaceShips/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.cinemachine.editor">
+      <HintPath>C:/UNITY/BasicSpaceShips/Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/UNITY/BasicSpaceShips/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
