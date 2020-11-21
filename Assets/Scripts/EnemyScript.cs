@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
-    public float Speed;
     public Rigidbody2D rb;
     public ParticleSystem boom;
-
 
     private void Update()
     {
@@ -15,7 +13,7 @@ public class EnemyScript : MonoBehaviour
         {
             Destroy(transform.gameObject);
         }
-        rb.velocity = Vector2.right * -Speed * Time.deltaTime * Random.Range(1f, 1.5f);
+        rb.velocity = Vector2.right * -ScriptEnemySpawner.Speed * Time.deltaTime * Random.Range(1f, 1.5f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -142,7 +142,7 @@ public class PlayerScript : MonoBehaviour
     IEnumerator ShootTimer()
     {
         canShoot = false;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         canShoot = true;
     }
 
@@ -153,8 +153,8 @@ public class PlayerScript : MonoBehaviour
         if (score > highscore)
         {
             highscore = score;
+            SaveFile();
         }
-        SaveFile();
     }
 
     public void SaveFile()
