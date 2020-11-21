@@ -11,6 +11,8 @@ public class PlayerScript : MonoBehaviour
 {
 
     [SerializeField] GameObject[] hearts = null;
+    [SerializeField] bl_Joystick Joystick;
+
     private bool dead;
     private int score = 0;
     public int Speed;
@@ -41,8 +43,6 @@ public class PlayerScript : MonoBehaviour
         _score.text = $"high score: {highscore} ({highname})";
         dead = false;
 
-        SwipeDetector.OnSwipe += Player_OnSwipe;
-        SwipeDetector.OnTouch += Player_OnTouch;
     }
 
     private void Player_OnTouch(bool data)
@@ -53,32 +53,6 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    private void Player_OnSwipe(SwipeData data)
-    {
-        float h = 0;
-        float v = 0;
-
-        if (data.Direction == SwipeDirection.Up)
-        {
-            v = 1;
-
-        }
-        if (data.Direction == SwipeDirection.Down)
-        {
-            v = -1;
-        }
-        if (data.Direction == SwipeDirection.Left)
-        {
-            h = -1;
-        }
-        if (data.Direction == SwipeDirection.Right)
-        {
-            h = 1;
-        }
-        Vector3 tempVect = new Vector3(h, v, 0);
-        tempVect = tempVect.normalized * Speed * Time.deltaTime;
-        rb.MovePosition(rb.transform.position + tempVect);
-    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -140,8 +114,11 @@ public class PlayerScript : MonoBehaviour
     {
         float h = Input.GetAxis(horizontalAxis);
         float v = Input.GetAxis(verticalAxis);
-        //Debug.Log($"{h},{v}");
-        Vector3 tempVect = new Vector3(h, v, 0);
+        float jh = Joystick.Horizontal;
+        float jv = Joystick.Vertical;
+
+        //Debug.Log($"{jh+h},{jv+v}");
+        Vector3 tempVect = new Vector3(jh+h, jv+v, 0);
         tempVect = tempVect.normalized * Speed * Time.deltaTime;
         rb.MovePosition(rb.transform.position + tempVect);
 

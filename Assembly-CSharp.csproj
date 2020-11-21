@@ -78,6 +78,9 @@
     <Compile Include="Assets\Scripts\ScriptEnemySpawner.cs" />
     <Compile Include="Assets\Scripts\ScriptSpawner.cs" />
     <Compile Include="Assets\Scripts\ScrollBackground.cs" />
+    <Compile Include="Assets\UJoystick\Content\Script\Core\bl_Joystick.cs" />
+    <Compile Include="Assets\UJoystick\Content\Script\Internal\bl_JoystickUtils.cs" />
+    <None Include="Assets\UJoystick\ReadMe.txt" />
     <None Include="Assets\EasyParallax\Readme.txt" />
     <Reference Include="UnityEngine">
       <HintPath>C:/UNITY/2019.4.15f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
