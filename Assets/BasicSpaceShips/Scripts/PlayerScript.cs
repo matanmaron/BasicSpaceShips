@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
-
     [SerializeField] GameObject[] hearts = null;
     [SerializeField] bl_Joystick Joystick;
-
+    [SerializeField] InputActionReference inputActionMove;
+    [SerializeField] InputActionReference inputActionShoot;
     private bool dead;
     private int score = 0;
     public int Speed;
@@ -21,17 +17,9 @@ public class PlayerScript : MonoBehaviour
     public int health = 3;
     public int highscore;
     public string highname;
-
     public string _name;
     public ParticleSystem boom;
-
     public Text _score;
-    public InputField _inputField;
-
-    public string horizontalAxis = "Horizontal";
-    public string verticalAxis = "Vertical";
-    public Vector3 ToPosition;
-
     bool canShoot = true;
 
     // Start is called before the first frame update
@@ -42,7 +30,6 @@ public class PlayerScript : MonoBehaviour
         LoadFile();
         _score.text = $"high score: {highscore} ({highname})";
         dead = false;
-
     }
 
     private void Player_OnTouch(bool data)
@@ -52,7 +39,6 @@ public class PlayerScript : MonoBehaviour
             Shoot();
         }
     }
-
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -65,7 +51,6 @@ public class PlayerScript : MonoBehaviour
         {
             HitMe();
         }
-
     }
 
     void ShipDamage()
@@ -112,22 +97,14 @@ public class PlayerScript : MonoBehaviour
 
     private void HandleKeys()
     {
-        float h = Input.GetAxis(horizontalAxis);
-        float v = Input.GetAxis(verticalAxis);
+        Vector2 move = inputActionMove.action.ReadValue<Vector2>();
         float jh = Joystick.Horizontal;
         float jv = Joystick.Vertical;
 
-        //Debug.Log($"{jh+h},{jv+v}");
-        Vector3 tempVect = new Vector3(jh+h, jv+v, 0);
+        Debug.Log($"{jh+move.x},{jv+move.y}");
+        Vector3 tempVect = new Vector3(jh + move.x, jv + move.y, 0);
         tempVect = tempVect.normalized * Speed * Time.deltaTime;
         rb.MovePosition(rb.transform.position + tempVect);
-
-        //shoot
-
-        if (Input.GetButtonDown("Jump"))
-        {
-            Shoot();
-        }
     }
 
     public void Shoot()
@@ -167,5 +144,20 @@ public class PlayerScript : MonoBehaviour
     {
         highscore = PlayerPrefs.GetInt("score", 0);
         highname = PlayerPrefs.GetString("_name", string.Empty);
+    }
+
+    private void OnEnable()
+    {
+        inputActionShoot.action.started += ShootKey;
+    }
+
+    private void OnDisable()
+    {
+        inputActionShoot.action.started -= ShootKey;
+    }
+
+    private void ShootKey(InputAction.CallbackContext context)
+    {
+        Shoot();
     }
 }

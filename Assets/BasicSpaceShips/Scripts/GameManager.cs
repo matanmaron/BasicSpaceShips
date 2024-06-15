@@ -1,24 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using MaronByteStudio;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager Instance { get; private set; }
+    [SerializeField] InputActionReference inputActionQuit;
     internal bool mute = false;
     public bool gameOn = true;
 
-    private void Awake()
+    private void OnEnable()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
+        inputActionQuit.action.started += ResetKey;
+    }
+
+    private void OnDisable()
+    {
+        inputActionQuit.action.started -= ResetKey;
+    }
+
+    private void ResetKey(InputAction.CallbackContext context)
+    {
+        Reset();
     }
 
     public void onMute()
